@@ -1,0 +1,35 @@
+TIMEFRAME(daily)
+DK = KijunSen[9,26,52]
+c1 = 2*(close[1] CROSSES OVER DK[1])
+DSSB = SenkouSpanB[9,26,52]
+c2 = 2*(close[1] CROSSES OVER DSSB[1])
+DSSA = SenkouSpanA[9,26,52]
+c3 = 2*(close[1] CROSSES OVER DSSA[1])
+
+
+
+c4 = 3*(LOWEST[15](volume) > 5000)
+c5 = close > close[1]
+c6 = close[1] > close[2]
+
+
+DTS = TenkanSen[9,26,52]
+c7 = 2*(close[1] CROSSES OVER DTS[1])
+c8 =  (close > DTS[26]) // lagging span > cours
+
+TIMEFRAME(weekly)
+WK = KijunSen[9,26,52]
+c21 = 2*(close[1] CROSSES OVER WK[1])
+WTS = TenkanSen[9,26,52]
+c22 = 2*(close[1] CROSSES OVER WTS[1])
+WSSB = SenkouSpanB[9,26,52]
+c23 = 2*(close[1] CROSSES OVER WSSB[1])
+WSSA = SenkouSpanA[9,26,52]
+c24 = 2*(close[1] CROSSES OVER WSSA[1])
+
+c25 = (close > WTS[26]) // lagging span > cours
+c26 = WK>WTS and WTS>WSSB and WTS>WSSA
+
+score = c1+c2+c3+c21+c22+c23+c24+c25+c26+c4+c5+c6+c7+c8
+
+SCREENER(score as "score")

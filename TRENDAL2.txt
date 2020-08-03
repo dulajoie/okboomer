@@ -1,0 +1,44 @@
+//grover, all credits go o him).
+//PRC_Trend Impulse Filter | indicator
+//06.04.2020
+//Nicolas @ www.prorealcode.com
+//Sharing ProRealTime knowledge
+//converted from Pinescript code (author:alexgrover)
+
+// --- settings
+
+center = 1
+arrows = 1 // Plot Arrows 0=false ; 1=true
+// --- end of settings
+
+once b = src
+if barindex>length then
+src = (highest[length](high)+lowest[length](low))/2
+rising = src[offset]-src[offset+length]>0
+falling = src[offset]-src[offset+length]<0
+a = rising or falling
+b = exponentialaverage[center](a*src[offset]+(1-a)*b[1])
+//—-
+
+if b>b[1] then
+os=1
+cr=0
+cg=128
+cb=255
+elsif b<b[1] then
+os=-1
+cr=230
+cg=81
+cb=0
+endif
+
+if os <> os[1] and arrows then
+if os>0 then
+drawarrowup(barindex,b[1]) coloured(cr,cg,cb)
+else
+drawarrowdown(barindex,b[1]) coloured(cr,cg,cb)
+endif
+endif
+endif
+
+return b coloured(cr,cg,cb) style(line,3) as "Trend Impulse Filter"

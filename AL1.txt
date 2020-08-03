@@ -1,0 +1,18 @@
+// code proscreener d'exemple
+
+myTrendImpulseFilter1 = CALL "TRENDAL2"[25,8]
+myTrendImpulseFilter2 = CALL "TRENDAL2"[25,7]
+myTrendImpulseFilter3 = CALL "TRENDAL2"[25,2]
+myTrendImpulseFilter4 = CALL "TRENDAL2"[25,0]
+myTrendImpulseFilter5 = CALL "TRENDAL2"[25,4]
+a = myTrendImpulseFilter2 <= myTrendImpulseFilter1
+b = myTrendImpulseFilter4 >= myTrendImpulseFilter3
+vol = average[5](volume) > average[30](volume)
+minvol = average[20](volume) > 10000
+
+c = a and b and minvol and vol
+
+d = c*(myTrendImpulseFilter4 - myTrendImpulseFilter5)/close[5]
+
+
+SCREENER[d] (d as "Good Trend")
