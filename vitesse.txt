@@ -1,0 +1,37 @@
+mm200 = ExponentialAverage[200](close)
+mm100 = ExponentialAverage[100](close)
+mm50 = ExponentialAverage[50](close)
+mm20 = ExponentialAverage[20](close)
+mm7 = ExponentialAverage[7](close)
+
+score = 0
+if close > mm7 then
+score = score+2
+endif
+if close > mm20 then
+score = score+2
+endif
+if close > mm50 then
+score = score+2
+endif
+if close > mm200 then
+score = score+2
+endif
+
+if mm7 > mm200 then
+score = score + 5
+endif
+if mm100 > mm100[1] then
+score = score + 5
+endif
+
+if mm200 > mm200[1] then
+score = score +10
+endif
+if average[50](volume)*average[50](close) > 15000 then
+score = score + 40
+endif
+score = score + (1 - mm20[15]/mm20) * 20
+
+
+SCREENER[score](score as "score")
