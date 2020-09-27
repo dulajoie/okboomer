@@ -31,7 +31,7 @@ endif
 if average[50](volume)*average[50](close) > 15000 then
 score = score + 40
 endif
-score = score + (1 - mm20[15]/mm20) * 20
+score = score + (1 - mm20[15]/mm20) * 50
 
 
 SCREENER[score](score as "score")
