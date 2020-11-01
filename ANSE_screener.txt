@@ -1,0 +1,107 @@
+
+once trendsignal=0 // haussier  1  ou baissier -1
+once indexsell=0 // index (date) auquel on repart à la baisse
+once min1bb=0   // cours min 1
+once min1index=0  // index (date) du cours min 1
+once min2index=0 // index (date) du cours min2
+once max1bb=0 // cours max1
+once min2bb=0  // cours min 2
+once sensib=9  // Sensibilité par rapport à la vol
+once bottomoffsetdown=9 // periode du bas de canal donchian tendance baissière
+once bottomoffsetup=18 // periode du bas de canal donchian tendance haussière
+once topoffsetup=20 // periode du haut de canal donchian tendance haussière
+once topoffsetdown=20 // periode du haut de canal donchian en tendance baissiere
+once bounceback1=12  // nombre de periode min pour la tasse
+once bounceback2=9 // nombre de periode min pour l'anse
+once breakout=0  // initialisation à 0 : 1 veut dire qu'on a trouvé une config qui marche
+
+if ( trendsignal = 1 ) then
+top = highest[topoffsetup+1](high[1])
+bottom = min(lowest[2](low[1]), max(bottom[1],lowest[bottomoffsetup](low)-sensib/2*std[10](close)))
+//trendvalue = (close-closebuy)/(barindex-indexbuy)
+else
+top =  highest[topoffsetdown](high)[1]
+bottom = lowest[max(10,min(bottomoffsetdown,barindex-indexsell))](low[1])
+endif
+
+//middle = (top+bottom)/2
+
+if trendsignal < 0 and close < lowest[max(1,barindex-indexsell)](close[1]) then
+min1bb=close
+min1index=barindex
+// drawarrowup(barindex, low - 0.3* std[10](close)) COLOURED(10,25,10)
+max1bb=0
+min2bb=0
+doublebounce=0
+endif
+
+if trendsignal < 0 and min2bb=0 and min1bb>0 and close > highest[max(1,barindex-min1index)](close)[1] and barindex>min1index+bounceback1 then
+max1bb = close
+max1index = barindex
+endif
+
+if trendsignal < 0 and max1bb>0 and close < max1bb and barindex>max1index+bounceback2 then
+if min2bb=0 then
+min2bb=close
+min2index = barindex
+else
+if close<min2bb then
+min2bb=close
+endif
+endif
+endif
+
+if breakout=0 and trendsignal=1 and barindex>indexbuy+bounceback2 then
+if (breakoutlevel < (low - 0.25*std[20](close[1]))) then
+bottom = min(lowest[2](low[1]),breakoutlevel)
+breakout=1
+//indexbreakout=barindex
+endif
+endif
+
+
+if trendsignal < 0 and min2bb>0 and close > highest[max(1,barindex-min1index)](close[1]) and barindex>min2index+bounceback2 then
+doublebounce = 1
+breakoutlevel = highest[max(1,barindex-min1index)](close[1])
+else
+doublebounce = 0
+endif
+
+
+if trendsignal<1 and close > top[1] then
+overthetop = 1
+breakoutlevel = top[1]
+else
+overthetop = 0
+endif
+
+
+if trendsignal < 1 and (overthetop or doublebounce ) and barindex>max(topoffsetdown,bottomoffsetdown) then
+trendsignal = 1
+if trendsignal[1]<1 then
+bottom =  max(breakoutlevel, breakoutlevel - sensib * std[20](close[1]))
+
+top = max(top, high)
+indexbuy = barindex
+//closebuy = close
+//bottombuy=bottom
+breakout=0
+endif
+else
+if trendsignal = 1 and low <= bottom[1] then
+trendsignal = -1
+indexsell = barindex
+min1bb=0
+max1bb=0
+min2bb=0
+doublebounce=0
+else
+//trendclose=closebuy+(barindex-indexbuy)*average[15](trendvalue)-std[10](close)/2
+endif
+endif
+
+
+//middle = (top+bottom)/2
+
+
+SCREENER(highest[75](doublebounce) as "anse")
