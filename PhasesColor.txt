@@ -1,0 +1,84 @@
+
+alpha = 0.05
+bolper = 20
+longterme = 70
+bu = BollingerUp[bolper](close)
+bd = BollingerDown[bolper](close)
+MM20 = Average[bolper](close)
+x = 50
+
+deltab = bu-bd
+
+tendup =  bu - bu[1]
+tenddown = bd - bd[1]
+
+phase1 = (tendup > -1 * alpha * std[longterme](bu) ) and (tendup< alpha * std[longterme](bu)) and (tenddown > -1 * alpha * std[longterme](bd) ) and (tenddown< alpha * std[longterme](bd))
+phase2up = (tendup > alpha * std[longterme](bu)) and (tenddown < -1 * alpha * std[longterme](bd)) and (close > MM20)
+phase2down = (tendup >  alpha * std[longterme](bu) ) and (tenddown < -1 * alpha * std[longterme](bd)) and (close <MM20)
+phase3up = ( tendup >alpha * std[longterme](bu)) and (tenddown >alpha * std[longterme](bd) )
+phase3down = ( tendup < -1 * alpha * std[longterme](bu)) and (tenddown < -1 * alpha * std[longterme](bd) )
+phase4 = ( tendup < -1 * alpha * std[longterme](bu)) and (tenddown > alpha * std[longterme](bd) )
+//rouge 
+
+if phase3down then
+r=250
+g=0
+b=0
+ENDIF
+//orange
+
+if phase2down then
+r=255
+g=160
+b=0
+ENDIF
+//jaune
+
+if phase1 then
+r=800
+g=250
+b=0
+ENDIF
+//vert fluo 
+
+if phase2up then
+r=0
+g=300
+b=0
+ENDIF
+//vert foncé
+
+if phase3up then
+r=0
+g=150
+b=0
+ENDIF
+//bleu 
+if phase4 then
+r=0
+g=0
+b=300
+ENDIF
+//gris 
+
+if (phase1+phase2up+phase2down+phase3up+phase3down+phase4=0) then
+r=150
+g=150
+b=150
+ENDIF
+
+IF deltab < 0.5 * Average[longterme](deltab) THEN
+r=18
+g=223
+b=250
+x=140
+ELSE
+x=50
+ENDIF
+
+
+max1=bu
+min1=bd
+DRAWCANDLE(max1, min1, max1, min1)coloured(R,G,B,x)
+
+RETURN MM20 style(line) as "MM20" , bu as "Bollsup",bd as "Bollinf"
